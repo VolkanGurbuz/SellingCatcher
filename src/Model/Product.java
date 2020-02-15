@@ -8,13 +8,15 @@ public class Product {
     private String productName;
     private double productPrice;
     private Date productDate;
+    private String categoryId;
 
 
-    public Product(String productId, String productName, double productPrice, Date productDate) {
+    public Product(String productId, String productName, double productPrice, Date productDate, String categoryId) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productDate = productDate;
+        this.categoryId = categoryId;
     }
 
 
@@ -56,6 +58,14 @@ public class Product {
         this.productDate = productDate;
     }
 
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -63,6 +73,7 @@ public class Product {
                 ", productName='" + productName + '\'' +
                 ", productPrice=" + productPrice +
                 ", productDate=" + productDate +
+                ", categoryId='" + categoryId + '\'' +
                 '}';
     }
 }
