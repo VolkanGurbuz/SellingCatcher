@@ -1,23 +1,38 @@
 package Test;
 
 import Util.Util2;
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.DomSerializer;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import javax.xml.xpath.*;
+
+
 
 public class Test {
 
 
     public static void main(String[] args) {
+        try
+        {
+            XPathFactory xpf = XPathFactory.newInstance();
+            XPath xpath = xpf.newXPath();
+            String webSiteDoc =  Util2.getURLSource("https://www.amazon.com.tr/gp/browse.html?node=13526049031&ref_=nav_em_T1_0_4_8_3_pca_shaving");
 
-        String exampleJsonUrl = "https://volkangurbuz.com/restapi/product/readAllStudent.php";
 
-        String getJson = Util2.sendGetRequest(exampleJsonUrl);
+            Element userElement = (Element) xpath.evaluate("//li[contains(@id, 'result')]",Util2.wrapToDocument(webSiteDoc) ,
+                    XPathConstants.NODE);
 
-       // System.out.println("Get Json: " + getJson);
+            System.out.println(userElement.getAttribute("id"));
 
-        String exampleJsonPostUrl = "https://www.amazon.com.tr/xa/dealcontent/v2/GetDeals";
-        String formBody = "{\"requestMetadata\":{\"marketplaceID\":\"A33AVAJ2PDY3EV\",\"clientID\":\"goldbox_mobile_pc\",\"sessionID\":\"259-3784078-1319449\"},\"dealTargets\":[{\"dealID\":\"0e782399\"},{\"dealID\":\"10a84bf1\"},{\"dealID\":\"2cc95013\"},{\"dealID\":\"30b40347\"},{\"dealID\":\"4a06ebd5\"},{\"dealID\":\"55ee3d3f\"},{\"dealID\":\"8e495e40\"},{\"dealID\":\"bb3d3e4b\"},{\"dealID\":\"cffbb963\"},{\"dealID\":\"dd016133\"},{\"dealID\":\"ea7644de\"},{\"dealID\":\"f60ab753\"}],\"customerContext\":{\"languageOfPreference\":\"tr_TR\"}}";
-
-        System.out.println("get post json: " + Util2.sendPostRequest(exampleJsonPostUrl, formBody));
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
