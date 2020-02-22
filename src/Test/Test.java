@@ -46,13 +46,28 @@ public class Test {
 
               //  System.out.println("page: "  + newPageLink );
 
-                String webSiteDocPage =  Util2.getURLSource(mainUrl + pageLink);
+                String webSiteDocPage =  Util2.getURLSource(mainUrl + newPageLink);
 
-                NodeList nodeListofThePage = (NodeList) xpath.evaluate("//li[contains(@id, 'result')]",Util2.wrapToDocument(webSiteDocPage) ,
-                        XPathConstants.NODESET);
-                System.out.println("Page: " + i + "\n");
-                parsePage(nodeListofThePage);
-                System.out.println("\n");
+
+
+                if (i == 1) {
+                    NodeList nodeListofThePage = (NodeList) xpath.evaluate("//li[contains(@id, 'result')]", Util2.wrapToDocument(webSiteDocPage),
+                            XPathConstants.NODESET);
+                    System.out.println("Page: " + i);
+                    System.out.println("Number Of Products: " + nodeListofThePage.getLength() + "\n");
+                    parsePage(nodeListofThePage);
+                    System.out.println("\n");
+                }
+                else{
+                    NodeList nodeListofThePage = (NodeList) xpath.evaluate("//span[contains(@data-component-type, 's-search-results')]//div//div[contains(@class, 's-result-item')]",Util2.wrapToDocument(webSiteDocPage) ,
+                            XPathConstants.NODESET);
+                    System.out.println("Page: " + i);
+                    System.out.println("Number Of Products: " + nodeListofThePage.getLength() + "\n");
+                    parseAnotherPages(nodeListofThePage);
+                    System.out.println("\n");
+                }
+
+
 
             }
 
@@ -61,7 +76,6 @@ public class Test {
         }
     }
     private static void parsePage(NodeList nodeListofThePage) {
-        System.out.println(nodeListofThePage.getLength());
         try {
             for (int i = 0; i < nodeListofThePage.getLength()-1; i++) {
                 Node node= nodeListofThePage.item(i);
@@ -76,7 +90,7 @@ public class Test {
                     String productImg = (String) xpath.evaluate(".//div[2]//div[1]//div[1]//a//img//@src", element,
                             XPathConstants.STRING);
 
-                    Product tempProduct = new Product(productName, parsePrice(productPrice), productImg);
+                    Product tempProduct = new Product(productName, Util2.parsePrice(productPrice), productImg);
 
                     System.out.println(tempProduct.toString());
                 }
@@ -87,22 +101,29 @@ public class Test {
         }
     }
 
-    private static double parsePrice(String price){
-        List<Character> numberList = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',');
-        String tempPrice = "";
-        for (int i=0; i <    price.length(); i++)
-        {
-            if (numberList.contains(price.charAt(i))){
-                if (price.charAt(i) == ','){
-                    tempPrice += ".";
-                }
-                else {
-                    tempPrice += (Character.toString(price.charAt(i)));
+    private static void parseAnotherPages(NodeList nodeListofThePage) {
+        try {
+            for (int i = 0; i < nodeListofThePage.getLength(); i++) {
+                Node node= nodeListofThePage.item(i);
+                if(node instanceof Element){
+                    Element element = (Element) node;
+                    String productName =(String) xpath.evaluate(".//div//span//div//div//div[2]//h2//a//span",element ,
+                            XPathConstants.STRING);
+
+                    String productPrice =(String)   xpath.evaluate(".//div//span//div//div//div[3]//div//div//a//span//span[1]",element ,
+                            XPathConstants.STRING);
+
+                    String productImg = (String) xpath.evaluate(".//div//span//div//div//span//a//div//img//@src", element,
+                            XPathConstants.STRING);
+
+                    Product tempProduct = new Product(productName, Util2.parsePrice(productPrice), productImg);
+
+                    System.out.println(tempProduct.toString());
                 }
             }
         }
-
-        return Double.parseDouble(tempPrice);
-
+        catch (Exception e){
+            System.err.println("parsePage 2 "  + e.getMessage());
+        }
     }
 }

@@ -15,6 +15,8 @@ import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 
 public final class Util2 {
 
@@ -103,6 +105,30 @@ public final class Util2 {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static double parsePrice(String price){
+        try {
+            List<Character> numberList = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',');
+            String tempPrice = "";
+            for (int i=0; i < price.length(); i++)
+            {
+                if (numberList.contains(price.charAt(i))){
+                    if (price.charAt(i) == ','){
+                        tempPrice += ".";
+                    }
+                    else {
+                        tempPrice += (Character.toString(price.charAt(i)));
+                    }
+                }
+            }
+
+            return Double.parseDouble(tempPrice);
+        }
+        catch (Exception e){
+            System.err.println(e.getMessage());
+            return 0;
+        }
     }
 
 
