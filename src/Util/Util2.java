@@ -116,7 +116,6 @@ public final class Util2 {
     }
 
     public static void parseFirstPage(NodeList nodeListofThePage) {
-        System.out.println(nodeListofThePage.getLength());
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
                 Node node = nodeListofThePage.item(i);
@@ -150,18 +149,23 @@ public final class Util2 {
                     Element element = (Element) node;
                     String productName = (String) xpath.evaluate(".//div//span//div//div//div[2]//h2//a//span", element,
                             XPathConstants.STRING);
-
                     String productPrice = (String) xpath.evaluate(".//div//span//div//div//div[3]//div//div//a//span//span[1]", element,
                             XPathConstants.STRING);
-
                     String productPriceCheck = (String) xpath.evaluate(".//div//span//div//div//div[4]//div//div//a//span//span[1]", element,
                             XPathConstants.STRING);
-
-                    productPrice = productPrice.isEmpty() ? productPriceCheck : productPrice;
-                  /*  String productImg = (String) xpath.evaluate(".//div[2]//div[1]//div[1]//a//img//@src", element,
+                    String productPriceCheckOthers = (String) xpath.evaluate(".//div//span//div//div//div[3]//div//span[2]", element,
                             XPathConstants.STRING);
-                    Product tempProduct = new Product(productName, parsePrice(productPrice), productImg);*/
-                    System.out.println("name: " + productName.trim() + " product price " + productPrice.trim());
+
+                    if (productPrice.isEmpty() && productPriceCheck.isEmpty()){
+                        productPrice = productPriceCheckOthers;
+                    }else if(productPrice.isEmpty()){
+                        productPrice = productPriceCheck;
+                    }
+
+                    String productImg = (String) xpath.evaluate(".//div//span//div//div//span//a//div//img//@src", element,
+                            XPathConstants.STRING);
+                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg);
+                    System.out.println(tempProduct.toString());
                 }
             }
         } catch (Exception e) {
@@ -196,8 +200,12 @@ public final class Util2 {
                         XPathConstants.NODESET);
 
                 if (i == 1) {
+                    System.out.println("Page: " + i);
+                    System.out.println("Number Of Products: " + nodeListofThePage.getLength());
                     Util2.parseFirstPage(nodeListofThePage);
                 } else {
+                    System.out.println("Page: " + i);
+                    System.out.println("Number Of Products: " + nodeListofNonFirstPage.getLength());
                     Util2.parseNonFirstPage(nodeListofNonFirstPage);
                 }
             }
