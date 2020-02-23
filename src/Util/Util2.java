@@ -140,8 +140,6 @@ public final class Util2 {
             System.err.println("parsePage 2 " + e.getMessage());
         }
     }
-
-
     public static void parseNonFirstPage(NodeList nodeListofThePage) {
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
@@ -157,16 +155,19 @@ public final class Util2 {
                     String productPriceCheck = (String) xpath.evaluate(".//div//span//div//div//div[4]//div//div//a//span//span[1]", element,
                             XPathConstants.STRING);
 
-                    productPrice = productPrice.isEmpty() ? productPriceCheck : productPrice;
+                    String productPriceCheckOthers = (String) xpath.evaluate(".//div//span//div//div//div[3]//div//span[2]", element,
+                            XPathConstants.STRING);
+
+                    if (productPrice.isEmpty() && productPriceCheck.isEmpty()){
+                        productPrice = productPriceCheckOthers;
+                    }else if(productPrice.isEmpty()){
+                        productPrice = productPriceCheck;
+                    }
 
                     String productImg = (String) xpath.evaluate(".//div//span//div//div//span//a//div//@src", element,
                             XPathConstants.STRING);
 
-
                     Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg);
-                  /*  String productImg = (String) xpath.evaluate(".//div[2]//div[1]//div[1]//a//img//@src", element,
-                            XPathConstants.STRING);
-                  */
                     System.out.println(tempProduct.toString());
                 }
             }
