@@ -158,10 +158,16 @@ public final class Util2 {
                             XPathConstants.STRING);
 
                     productPrice = productPrice.isEmpty() ? productPriceCheck : productPrice;
+
+                    String productImg = (String) xpath.evaluate(".//div//span//div//div//span//a//div//@src", element,
+                            XPathConstants.STRING);
+
+
+                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg);
                   /*  String productImg = (String) xpath.evaluate(".//div[2]//div[1]//div[1]//a//img//@src", element,
                             XPathConstants.STRING);
-                    Product tempProduct = new Product(productName, parsePrice(productPrice), productImg);*/
-                    System.out.println("name: " + productName.trim() + " product price " + productPrice.trim());
+                  */
+                    System.out.println(tempProduct.toString());
                 }
             }
         } catch (Exception e) {
