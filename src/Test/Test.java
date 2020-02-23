@@ -1,5 +1,6 @@
 package Test;
 
+import Model.Page;
 import Model.Product;
 import Util.Util2;
 import org.htmlcleaner.CleanerProperties;
@@ -23,7 +24,10 @@ public class Test {
 
     public static void main(String[] args) {
 
-        Util2.parsePage();
+        Page pageAmazon = new Page("amazon" , "https://www.amazon.com.tr");
+
+        Util2 testUtil = new Util2();
+        testUtil.parsePage(pageAmazon);
 
     }
 

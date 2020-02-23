@@ -1,5 +1,6 @@
 package Util;
 
+import Model.Page;
 import Model.Product;
 import org.htmlcleaner.*;
 import org.w3c.dom.Document;
@@ -24,10 +25,8 @@ public final class Util2 {
     //  also known as Helper class, is a class, which contains just static helper method
 
     private static HttpClient client = HttpClient.newHttpClient();
-    public static final String firstPagePatter = "";
-    public static XPathFactory xpf = XPathFactory.newInstance();
-    public static XPath xpath = xpf.newXPath();
-
+    private  XPathFactory xpf = XPathFactory.newInstance();
+    private  XPath xpath = xpf.newXPath();
 
     public static String sendGetRequest(String url) {
         try {
@@ -74,8 +73,6 @@ public final class Util2 {
         return null;
     }
 
-    //kanka simdi ben siteyi cekiyorum su sekilde
-
     public static String getURLSource(String url) throws IOException {
         URL urlObject = new URL(url);
         URLConnection urlConnection = urlObject.openConnection();
@@ -115,7 +112,7 @@ public final class Util2 {
         return null;
     }
 
-    public static void parseFirstPage(NodeList nodeListofThePage) {
+    private void parseFirstPage(NodeList nodeListofThePage) {
         System.out.println(nodeListofThePage.getLength());
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
@@ -140,7 +137,7 @@ public final class Util2 {
             System.err.println("parsePage 2 " + e.getMessage());
         }
     }
-    public static void parseNonFirstPage(NodeList nodeListofThePage) {
+    private  void parseNonFirstPage(NodeList nodeListofThePage) {
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
                 Node node = nodeListofThePage.item(i);
@@ -176,36 +173,35 @@ public final class Util2 {
         }
     }
 
-    public static void parsePage() {
+    public void parsePage(Page page) {
         try {
-            String mainUrl = "https://www.amazon.com.tr";
             String webSiteDoc = Util2.getURLSource("https://www.amazon.com.tr/gp/browse.html?node=13526049031&ref_=nav_em_T1_0_4_8_3_pca_shaving");
 
-            Element pageElement = (Element) Util2.xpath.evaluate("//span[@class='pagnRA']//a", Util2.wrapToDocument(webSiteDoc), XPathConstants.NODE);
+            Element pageElement = (Element) xpath.evaluate("//span[@class='pagnRA']//a", Util2.wrapToDocument(webSiteDoc), XPathConstants.NODE);
 
-            int pageEnd = Integer.parseInt((String) Util2.xpath.evaluate("//span[@class='pagnDisabled']", Util2.wrapToDocument(webSiteDoc), XPathConstants.STRING));
+            int pageEnd = Integer.parseInt((String) xpath.evaluate("//span[@class='pagnDisabled']", Util2.wrapToDocument(webSiteDoc), XPathConstants.STRING));
 
             String pageLink = pageElement.getAttribute("href");
             pageLink = pageLink.substring(0, pageLink.length() - 1);
 
             for (int i = 1; i <= pageEnd; i++) {
 
-                String newPageLink = mainUrl + pageLink + i;
+                String newPageLink = page.getPageUrl() + pageLink + i;
 
                 String webSiteDocPage = Util2.getURLSource(newPageLink);
 
                 String exp = "//span[contains(@data-component-type, 's-search-results')]//div//div[contains(@class, 's-result-item')]";
 
-                NodeList nodeListofNonFirstPage = (NodeList) Util2.xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
+                NodeList nodeListofNonFirstPage = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
                         XPathConstants.NODESET);
 
                 NodeList nodeListofThePage = (NodeList) xpath.evaluate("//li[contains(@id, 'result')]", Util2.wrapToDocument(webSiteDocPage),
                         XPathConstants.NODESET);
 
                 if (i == 1) {
-                    Util2.parseFirstPage(nodeListofThePage);
+                   parseFirstPage(nodeListofThePage);
                 } else {
-                    Util2.parseNonFirstPage(nodeListofNonFirstPage);
+                    parseNonFirstPage(nodeListofNonFirstPage);
                 }
             }
         } catch (Exception e) {
