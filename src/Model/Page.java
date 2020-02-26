@@ -4,12 +4,26 @@ public class Page {
 
     private String pageName;
     private String pageUrl;
+    private String pageFullCategoryUrl;
 
     public Page(String pageName, String pageUrl) {
         this.pageName = pageName;
         this.pageUrl = pageUrl;
     }
 
+    public Page(String pageName, String pageUrl, String pageFullCategoryUrl) {
+        this.pageName = pageName;
+        this.pageUrl = pageUrl;
+        this.pageFullCategoryUrl = pageFullCategoryUrl;
+    }
+
+    public String getPageFullCategoryUrl() {
+        return pageFullCategoryUrl;
+    }
+
+    public void setPageFullCategoryUrl(String pageFullCategoryUrl) {
+        this.pageFullCategoryUrl = pageFullCategoryUrl;
+    }
 
     public String getPageName() {
         return pageName;
