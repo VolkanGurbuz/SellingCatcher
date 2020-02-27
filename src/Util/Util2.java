@@ -25,8 +25,8 @@ public final class Util2 {
     //  also known as Helper class, is a class, which contains just static helper method
 
     private static HttpClient client = HttpClient.newHttpClient();
-    private  XPathFactory xpf = XPathFactory.newInstance();
-    private  XPath xpath = xpf.newXPath();
+    private XPathFactory xpf = XPathFactory.newInstance();
+    private XPath xpath = xpf.newXPath();
 
     public static String sendGetRequest(String url) {
         try {
@@ -172,6 +172,49 @@ public final class Util2 {
             System.err.println("parsePage 2 " + e.getMessage());
         }
     }
+    public void getAllCategories(Page page){
+        try {
+
+            String url = page.getPageFullCategoryUrl();
+
+            String webSiteDocPage = Util2.getURLSource(url);
+            String exp = "//table[@id ='shopAllLinks']//td//div";
+
+            NodeList nodeListCategories = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
+                    XPathConstants.NODESET);
+
+            for (int i = 0; i < nodeListCategories.getLength(); i++) {
+                Node node = nodeListCategories.item(i);
+                if (node instanceof Element) {
+                    Element element = (Element) node;
+
+                    String categoryName = (String) xpath.evaluate(".//h2", element,
+                            XPathConstants.STRING);
+
+                    NodeList nodeListSubCategories = (NodeList) xpath.evaluate(".//ul//li", element,
+                            XPathConstants.NODESET);
+                    System.out.println("ctegoryName: " + categoryName + " nodelist  " + nodeListSubCategories.getLength());
+
+                    for (int j = 0; j < nodeListSubCategories.getLength(); j++) {
+                        Node nodeSub = nodeListSubCategories.item(j);
+                        if (nodeSub instanceof Element) {
+                            Element elementSub = (Element) nodeSub;
+                            String subCategoryName = (String) xpath.evaluate(".//a", elementSub,
+                                    XPathConstants.STRING);
+                            String subCategoryLink = (String) xpath.evaluate(".//a/@href", elementSub,
+                                    XPathConstants.STRING);
+                            System.out.println("subCategoryName: " + subCategoryName + " subCategoryLink: " + subCategoryLink);
+                        }
+
+                    }
+                }
+
+            }
+        }
+        catch (Exception e){
+            System.err.println("getAllCategories " + e);
+        }
+    }
 
     public void parsePage(Page page) {
         try {
@@ -240,8 +283,12 @@ public final class Util2 {
             bw.write(content);
             bw.close();
         } catch (Exception e) {
+            System.err.println("dumpToFile " + e);
 
         }
     }
+
+
+
 
 }
