@@ -3,6 +3,7 @@ package Util;
 import Model.Page;
 import Model.Product;
 import org.htmlcleaner.*;
+import org.unbescape.html.HtmlEscape;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -17,8 +18,12 @@ import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public final class Util2 {
 
@@ -203,7 +208,7 @@ public final class Util2 {
                                     XPathConstants.STRING);
                             String subCategoryLink = (String) xpath.evaluate(".//a/@href", elementSub,
                                     XPathConstants.STRING);
-                            System.out.println("subCategoryName: " + subCategoryName + " subCategoryLink: " + subCategoryLink);
+                            System.out.println("subCategoryName: " + clearTurkishChars(subCategoryName) + " subCategoryLink: " + subCategoryLink);
                         }
 
                     }
@@ -288,7 +293,15 @@ public final class Util2 {
         }
     }
 
-
+    public static String clearTurkishChars(String str) {
+        String ret = HtmlEscape.unescapeHtml(str); ;
+        char[] turkishChars = new char[] {0x131, 0x130, 0xFC, 0xDC, 0xF6, 0xD6, 0x15F, 0x15E, 0xE7, 0xC7, 0x11F, 0x11E};
+        char[] englishChars = new char[] {'i', 'I', 'u', 'U', 'o', 'O', 's', 'S', 'c', 'C', 'g', 'G'};
+        for (int i = 0; i < turkishChars.length; i++) {
+            ret = ret.replaceAll(new String(new char[]{turkishChars[i]}), new String(new char[]{englishChars[i]}));
+        }
+        return ret;
+    }
 
 
 }
