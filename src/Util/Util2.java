@@ -98,24 +98,7 @@ public final class Util2 {
         }
     }
 
-    public static Document wrapToDocument(String document) {
-        try {
-            HtmlCleaner cleaner = new HtmlCleaner();
-            TagNode rootNode = cleaner.clean(document);
-            DomSerializer domSerializer = new DomSerializer(new CleanerProperties());
-            CleanerProperties properties = cleaner.getProperties();
-            Serializer serializer = new SimpleHtmlSerializer(properties);
-            StringWriter writer = new StringWriter();
-            serializer.write(rootNode, writer, "UTF-8");
 
-            //   dumpToFile(writer.toString(), i+"file.html");
-
-            return domSerializer.createDOM(rootNode);
-        } catch (ParserConfigurationException | IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private void parseFirstPage(NodeList nodeListofThePage) {
         System.out.println(nodeListofThePage.getLength());
@@ -223,7 +206,7 @@ public final class Util2 {
 
     public void parsePage(Page page) {
         try {
-            String webSiteDoc = Util2.getURLSource("https://www.amazon.com.tr/gp/browse.html?node=13526049031&ref_=nav_em_T1_0_4_8_3_pca_shaving");
+            String webSiteDoc = Util2.getURLSource("https://www.amazon.com.tr/b?ie=UTF8&node=14631516031&ref_=sd_allcat_sport_team");
 
             Element pageElement = (Element) xpath.evaluate("//span[@class='pagnRA']//a", Util2.wrapToDocument(webSiteDoc), XPathConstants.NODE);
 
@@ -291,6 +274,23 @@ public final class Util2 {
             System.err.println("dumpToFile " + e);
 
         }
+    }
+
+    public static Document wrapToDocument(String document) {
+        try {
+            HtmlCleaner cleaner = new HtmlCleaner();
+            TagNode rootNode = cleaner.clean(document);
+            CleanerProperties properties = cleaner.getProperties();
+            DomSerializer domSerializer = new DomSerializer(properties);
+            Serializer serializer = new SimpleHtmlSerializer(properties);
+            StringWriter writer = new StringWriter();
+            serializer.write(rootNode, writer, "UTF-8");
+            dumpToFile(writer.toString(), "file.html");
+            return domSerializer.createDOM(rootNode);
+        } catch (ParserConfigurationException | IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static String clearTurkishChars(String str) {
