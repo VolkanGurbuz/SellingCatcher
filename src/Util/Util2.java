@@ -191,7 +191,8 @@ public final class Util2 {
                                     XPathConstants.STRING);
                             String subCategoryLink = (String) xpath.evaluate(".//a/@href", elementSub,
                                     XPathConstants.STRING);
-                            System.out.println("subCategoryName: " + clearTurkishChars(subCategoryName) + " subCategoryLink: " + subCategoryLink);
+
+                            System.out.println("subCategoryName: " + clearTurkishChars(subCategoryName) + " subCategoryLink: " + fixLCategoryLink(subCategoryLink));
                         }
 
                     }
@@ -203,6 +204,20 @@ public final class Util2 {
             System.err.println("getAllCategories " + e);
         }
     }
+
+    private String fixLCategoryLink(String URL){
+        try {
+
+            String url = URL.substring(URL.indexOf("?ie")).replace("amp;","");
+
+            return url;
+            }catch (Exception e){
+            System.err.println("error");
+        }
+return null;
+    }
+
+
 
     public void parsePage(Page page) {
         try {
