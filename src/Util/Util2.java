@@ -98,8 +98,6 @@ public final class Util2 {
         }
     }
 
-
-
     private void parseFirstPage(NodeList nodeListofThePage) {
         System.out.println(nodeListofThePage.getLength());
         try {
@@ -125,7 +123,8 @@ public final class Util2 {
             System.err.println("parsePage 2 " + e.getMessage());
         }
     }
-    private  void parseNonFirstPage(NodeList nodeListofThePage) {
+
+    private void parseNonFirstPage(NodeList nodeListofThePage) {
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
                 Node node = nodeListofThePage.item(i);
@@ -143,9 +142,9 @@ public final class Util2 {
                     String productPriceCheckOthers = (String) xpath.evaluate(".//div//span//div//div//div[3]//div//span[2]", element,
                             XPathConstants.STRING);
 
-                    if (productPrice.isEmpty() && productPriceCheck.isEmpty()){
+                    if (productPrice.isEmpty() && productPriceCheck.isEmpty()) {
                         productPrice = productPriceCheckOthers;
-                    }else if(productPrice.isEmpty()){
+                    } else if (productPrice.isEmpty()) {
                         productPrice = productPriceCheck;
                     }
 
@@ -160,7 +159,8 @@ public final class Util2 {
             System.err.println("parsePage 2 " + e.getMessage());
         }
     }
-    public void getAllCategories(Page page){
+
+    public void getAllCategories(Page page) {
         try {
 
             String url = page.getPageFullCategoryUrl();
@@ -199,24 +199,22 @@ public final class Util2 {
                 }
 
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.err.println("getAllCategories " + e);
         }
     }
 
-    private String fixLCategoryLink(String URL){
+    private String fixLCategoryLink(String URL) {
         try {
 
-            String url = URL.substring(URL.indexOf("?ie")).replace("amp;","");
+            String url = URL.substring(URL.indexOf("?ie")).replace("amp;", "");
 
             return url;
-            }catch (Exception e){
+        } catch (Exception e) {
             System.err.println("error");
         }
-return null;
+        return null;
     }
-
 
 
     public void parsePage(Page page) {
@@ -245,7 +243,7 @@ return null;
                         XPathConstants.NODESET);
 
                 if (i == 1) {
-                   parseFirstPage(nodeListofThePage);
+                    parseFirstPage(nodeListofThePage);
                 } else {
                     parseNonFirstPage(nodeListofNonFirstPage);
                 }
@@ -309,9 +307,10 @@ return null;
     }
 
     public static String clearTurkishChars(String str) {
-        String ret = HtmlEscape.unescapeHtml(str); ;
-        char[] turkishChars = new char[] {0x131, 0x130, 0xFC, 0xDC, 0xF6, 0xD6, 0x15F, 0x15E, 0xE7, 0xC7, 0x11F, 0x11E};
-        char[] englishChars = new char[] {'i', 'I', 'u', 'U', 'o', 'O', 's', 'S', 'c', 'C', 'g', 'G'};
+        String ret = HtmlEscape.unescapeHtml(str);
+        ;
+        char[] turkishChars = new char[]{0x131, 0x130, 0xFC, 0xDC, 0xF6, 0xD6, 0x15F, 0x15E, 0xE7, 0xC7, 0x11F, 0x11E};
+        char[] englishChars = new char[]{'i', 'I', 'u', 'U', 'o', 'O', 's', 'S', 'c', 'C', 'g', 'G'};
         for (int i = 0; i < turkishChars.length; i++) {
             ret = ret.replaceAll(new String(new char[]{turkishChars[i]}), new String(new char[]{englishChars[i]}));
         }
