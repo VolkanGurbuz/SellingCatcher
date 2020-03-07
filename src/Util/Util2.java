@@ -1,5 +1,6 @@
 package Util;
 
+import Model.Category;
 import Model.Page;
 import Model.Product;
 import org.htmlcleaner.*;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -98,7 +100,7 @@ public final class Util2 {
         }
     }
 
-    private void parseFirstPage(NodeList nodeListofThePage) {
+    private void parseFirstPage(NodeList nodeListofThePage , Category c) {
         System.out.println(nodeListofThePage.getLength());
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
@@ -114,7 +116,7 @@ public final class Util2 {
                     String productImg = (String) xpath.evaluate(".//div[2]//div[1]//div[1]//a//img//@src", element,
                             XPathConstants.STRING);
 
-                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg);
+                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c);
 
                     System.out.println(tempProduct.toString());
                 }
@@ -124,7 +126,7 @@ public final class Util2 {
         }
     }
 
-    private void parseNonFirstPage(NodeList nodeListofThePage) {
+    private void parseNonFirstPage(NodeList nodeListofThePage, Category c) {
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
                 Node node = nodeListofThePage.item(i);
@@ -151,7 +153,7 @@ public final class Util2 {
                     String productImg = (String) xpath.evaluate(".//div//span//div//div//span//a//div//@src", element,
                             XPathConstants.STRING);
 
-                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg);
+                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c);
                     System.out.println(tempProduct.toString());
                 }
             }
@@ -171,6 +173,8 @@ public final class Util2 {
             NodeList nodeListCategories = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
                     XPathConstants.NODESET);
 
+            ArrayList<Category> categories = new ArrayList<>();
+
             for (int i = 0; i < nodeListCategories.getLength(); i++) {
                 Node node = nodeListCategories.item(i);
                 if (node instanceof Element) {
@@ -181,7 +185,7 @@ public final class Util2 {
 
                     NodeList nodeListSubCategories = (NodeList) xpath.evaluate(".//ul//li", element,
                             XPathConstants.NODESET);
-                    System.out.println("ctegoryName: " + categoryName + " nodelist  " + nodeListSubCategories.getLength());
+                    // System.out.println("ctegoryName: " + categoryName + " nodelist  " + nodeListSubCategories.getLength());
 
                     for (int j = 0; j < nodeListSubCategories.getLength(); j++) {
                         Node nodeSub = nodeListSubCategories.item(j);
@@ -192,13 +196,21 @@ public final class Util2 {
                             String subCategoryLink = (String) xpath.evaluate(".//a/@href", elementSub,
                                     XPathConstants.STRING);
 
-                            System.out.println("subCategoryName: " + clearTurkishChars(subCategoryName) + " subCategoryLink: " + fixLCategoryLink(subCategoryLink));
+                            categories.add(new Category("ID", clearTurkishChars(categoryName), clearTurkishChars(subCategoryName), fixLCategoryLink(subCategoryLink)));
+
+                            //   System.out.println("subCategoryName: " + clearTurkishChars(subCategoryName) + " subCategoryLink: " + fixLCategoryLink(subCategoryLink));
                         }
 
                     }
                 }
 
             }
+
+            if (!categories.isEmpty()) {
+                page.setCategoriesList(categories);
+            }
+
+
         } catch (Exception e) {
             System.err.println("getAllCategories " + e);
         }
@@ -220,35 +232,53 @@ public final class Util2 {
     //parsing page with Parse object
     public void parsePage(Page page) {
         try {
-            String webSiteDoc = Util2.getURLSource("https://www.amazon.com.tr/b?ie=UTF8&node=14631516031&ref_=sd_allcat_sport_team");
 
-            Element pageElement = (Element) xpath.evaluate("//span[@class='pagnRA']//a", Util2.wrapToDocument(webSiteDoc), XPathConstants.NODE);
+            for (Category c : page.getCategoriesList()) {
 
-            int pageEnd = Integer.parseInt((String) xpath.evaluate("//span[@class='pagnDisabled']", Util2.wrapToDocument(webSiteDoc), XPathConstants.STRING));
+                String category = c.getCategoryName();
+                String subCategory = c.getSubCategoryName();
+                String pageUrl = page.getPageUrl()+ "/b" + c.getCategoryLink();
 
-            String pageLink = pageElement.getAttribute("href");
-            pageLink = pageLink.substring(0, pageLink.length() - 1);
 
-            for (int i = 1; i <= pageEnd; i++) {
+                String webSiteDoc = Util2.getURLSource(pageUrl);
 
-                String newPageLink = page.getPageUrl() + pageLink + i;
+                if (webSiteDoc.indexOf("pagnRA") != -1) {
 
-                String webSiteDocPage = Util2.getURLSource(newPageLink);
+                    Element pageElement = (Element) xpath.evaluate("//span[@class='pagnRA']//a", Util2.wrapToDocument(webSiteDoc), XPathConstants.NODE);
 
-                String exp = "//span[contains(@data-component-type, 's-search-results')]//div//div[contains(@class, 's-result-item')]";
+                    dumpToFile(webSiteDoc, "file1.html");
 
-                NodeList nodeListofNonFirstPage = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
-                        XPathConstants.NODESET);
+                    int pageEnd = Integer.parseInt((String) xpath.evaluate("//span[@class='pagnDisabled']", Util2.wrapToDocument(webSiteDoc), XPathConstants.STRING));
 
-                NodeList nodeListofThePage = (NodeList) xpath.evaluate("//li[contains(@id, 'result')]", Util2.wrapToDocument(webSiteDocPage),
-                        XPathConstants.NODESET);
+                    String pageLink = pageElement.getAttribute("href");
 
-                if (i == 1) {
-                    parseFirstPage(nodeListofThePage);
-                } else {
-                    parseNonFirstPage(nodeListofNonFirstPage);
+                    pageLink = pageLink.substring(0, pageLink.length() - 1);
+
+                    for (int i = 1; i <= pageEnd; i++) {
+
+                        String newPageLink = page.getPageUrl() + pageLink + i;
+
+                        String webSiteDocPage = Util2.getURLSource(newPageLink);
+
+                        String exp = "//span[contains(@data-component-type, 's-search-results')]//div//div[contains(@class, 's-result-item')]";
+
+                        NodeList nodeListofNonFirstPage = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
+                                XPathConstants.NODESET);
+
+                        NodeList nodeListofThePage = (NodeList) xpath.evaluate("//li[contains(@id, 'result')]", Util2.wrapToDocument(webSiteDocPage),
+                                XPathConstants.NODESET);
+
+                        if (i == 1) {
+                          parseFirstPage(nodeListofThePage , c);
+                        } else {
+                            parseNonFirstPage(nodeListofNonFirstPage , c);
+                        }
+                    }
                 }
+
             }
+
+
         } catch (Exception e) {
             System.err.println("parsePage" + e.getMessage());
         }
