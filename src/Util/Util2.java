@@ -217,6 +217,7 @@ public final class Util2 {
     }
 
 
+    //parsing page with Parse object
     public void parsePage(Page page) {
         try {
             String webSiteDoc = Util2.getURLSource("https://www.amazon.com.tr/b?ie=UTF8&node=14631516031&ref_=sd_allcat_sport_team");

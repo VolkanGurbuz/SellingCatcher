@@ -25,9 +25,9 @@ public class Product {
 
 
     public Product(String productName, double productPrice, String productImg) {
-        this.productName = productName;
-        this.productPrice = productPrice;
-        this.productImg = productImg;
+            this.productName = productName;
+            this.productPrice = productPrice;
+            this.productImg = productImg;
     }
 
 //    public Product(String productId, String productName, double productPrice, String productImg) {
