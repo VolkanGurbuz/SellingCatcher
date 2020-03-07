@@ -12,6 +12,7 @@ public class Product {
     private String productImg;
     private Date productDate;
     private String categoryId;
+    private Category category;
 
 
     public Product(String productId, String productName, double productPrice, String productImg, Date productDate, String categoryId) {
@@ -24,10 +25,11 @@ public class Product {
     }
 
 
-    public Product(String productName, double productPrice, String productImg) {
+    public Product(String productName, double productPrice, String productImg, Category c) {
             this.productName = productName;
             this.productPrice = productPrice;
             this.productImg = productImg;
+            this.category = c;
     }
 
 //    public Product(String productId, String productName, double productPrice, String productImg) {
