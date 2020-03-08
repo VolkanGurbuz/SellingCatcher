@@ -21,11 +21,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.text.DateFormat;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public final class Util2 {
 
@@ -95,12 +94,11 @@ public final class Util2 {
             while ((inputLine = bufferedReader.readLine()) != null) {
                 stringBuilder.append(inputLine);
             }
-
             return stringBuilder.toString();
         }
     }
 
-    private void parseFirstPage(NodeList nodeListofThePage , Category c) {
+    private void parseFirstPage(NodeList nodeListofThePage , Category c, String date) {
         System.out.println(nodeListofThePage.getLength());
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
@@ -116,7 +114,7 @@ public final class Util2 {
                     String productImg = (String) xpath.evaluate(".//div[2]//div[1]//div[1]//a//img//@src", element,
                             XPathConstants.STRING);
 
-                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c);
+                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c, date);
 
                     System.out.println(tempProduct.toString());
                 }
@@ -126,7 +124,7 @@ public final class Util2 {
         }
     }
 
-    private void parseNonFirstPage(NodeList nodeListofThePage, Category c) {
+    private void parseNonFirstPage(NodeList nodeListofThePage, Category c, String date) {
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
                 Node node = nodeListofThePage.item(i);
@@ -153,7 +151,7 @@ public final class Util2 {
                     String productImg = (String) xpath.evaluate(".//div//span//div//div//span//a//div//@src", element,
                             XPathConstants.STRING);
 
-                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c);
+                    Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c, date);
                     System.out.println(tempProduct.toString());
                 }
             }
@@ -233,10 +231,10 @@ public final class Util2 {
     public void parsePage(Page page) {
         try {
 
+            String currentDate = getCurrentDate();
+
             for (Category c : page.getCategoriesList()) {
 
-                String category = c.getCategoryName();
-                String subCategory = c.getSubCategoryName();
                 String pageUrl = page.getPageUrl()+ "/b" + c.getCategoryLink();
 
 
@@ -269,9 +267,9 @@ public final class Util2 {
                                 XPathConstants.NODESET);
 
                         if (i == 1) {
-                          parseFirstPage(nodeListofThePage , c);
+                          parseFirstPage(nodeListofThePage , c , currentDate);
                         } else {
-                            parseNonFirstPage(nodeListofNonFirstPage , c);
+                            parseNonFirstPage(nodeListofNonFirstPage , c , currentDate);
                         }
                     }
                 }
@@ -347,6 +345,20 @@ public final class Util2 {
         }
         return ret;
     }
+
+
+    private String getCurrentDate(){
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            Date date = new Date();
+            return dateFormat.format(date);
+
+        }catch (Exception e){
+            System.err.println("errror getCurrentDate " + e ) ;
+        }
+        return null;
+    }
+
 
 
 }

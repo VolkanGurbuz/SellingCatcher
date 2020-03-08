@@ -10,19 +10,9 @@ public class Product {
     private String productName;
     private double productPrice;
     private String productImg;
-    private Date productDate;
+    private String productDate;
     private String categoryId;
     private Category category;
-
-
-    public Product(String productId, String productName, double productPrice, String productImg, Date productDate, String categoryId) {
-        this.productId = productId;
-        this.productName = productName;
-        this.productPrice = productPrice;
-        this.productImg = productImg;
-        this.productDate = productDate;
-        this.categoryId = categoryId;
-    }
 
 
     public Product(String productName, double productPrice, String productImg, Category c) {
@@ -32,12 +22,39 @@ public class Product {
             this.category = c;
     }
 
+
+    public Product(String productName, double productPrice, String productImg, Category c, String d) {
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productImg = productImg;
+        this.category = c;
+        this.productDate = d;
+    }
+
+
 //    public Product(String productId, String productName, double productPrice, String productImg) {
 //        this.productId = productId;
 //        this.productName = productName;
 //        this.productPrice = productPrice;
 //        this.productImg = productImg;
 //    }
+
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public String getProductDate() {
+        return productDate;
+    }
+
+    public void setProductDate(String productDate) {
+        this.productDate = productDate;
+    }
 
     public String getProductId() {
         return productId;
@@ -69,14 +86,6 @@ public class Product {
 
     public void setProductImg(String productImg) {
         this.productImg = productImg;
-    }
-
-    public Date getProductDate() {
-        return productDate;
-    }
-
-    public void setProductDate(Date productDate) {
-        this.productDate = productDate;
     }
 
     public String getCategoryId() {
