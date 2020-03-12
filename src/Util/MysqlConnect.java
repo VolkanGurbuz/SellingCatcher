@@ -19,8 +19,6 @@ public class MysqlConnect {
     private static final String PASSWORD = ""; //set password
     private static final String MAX_POOL = "250"; // set your own limit
 
-
-
     // create properties
     private Properties getProperties() {
         if (properties == null) {
