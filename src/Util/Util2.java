@@ -98,6 +98,61 @@ public final class Util2 {
         }
     }
 
+    //parsing page with Parse object
+    public void parsePage(Page page) {
+        try {
+
+            String currentDate = getCurrentDate();
+
+            for (Category c : page.getCategoriesList()) {
+
+                String pageUrl = page.getPageUrl()+ "/b" + c.getCategoryLink();
+
+
+                String webSiteDoc = Util2.getURLSource(pageUrl);
+
+                if (webSiteDoc.indexOf("pagnRA") != -1) {
+
+                    Element pageElement = (Element) xpath.evaluate("//span[@class='pagnRA']//a", Util2.wrapToDocument(webSiteDoc), XPathConstants.NODE);
+
+                    dumpToFile(webSiteDoc, "file1.html");
+
+                    int pageEnd = Integer.parseInt((String) xpath.evaluate("//span[@class='pagnDisabled']", Util2.wrapToDocument(webSiteDoc), XPathConstants.STRING));
+
+                    String pageLink = pageElement.getAttribute("href");
+
+                    pageLink = pageLink.substring(0, pageLink.length() - 1);
+
+                    for (int i = 1; i <= pageEnd; i++) {
+
+                        String newPageLink = page.getPageUrl() + pageLink + i;
+
+                        String webSiteDocPage = Util2.getURLSource(newPageLink);
+
+                        String exp = "//span[contains(@data-component-type, 's-search-results')]//div//div[contains(@class, 's-result-item')]";
+
+                        NodeList nodeListofNonFirstPage = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
+                                XPathConstants.NODESET);
+
+                        NodeList nodeListofThePage = (NodeList) xpath.evaluate("//li[contains(@id, 'result')]", Util2.wrapToDocument(webSiteDocPage),
+                                XPathConstants.NODESET);
+
+                        if (i == 1) {
+                            parseFirstPage(nodeListofThePage , c , currentDate);
+                        } else {
+                            parseNonFirstPage(nodeListofNonFirstPage , c , currentDate);
+                        }
+                    }
+                }
+
+            }
+
+
+        } catch (Exception e) {
+            System.err.println("parsePage" + e.getMessage());
+        }
+    }
+
     private void parseFirstPage(NodeList nodeListofThePage , Category c, String date) {
         System.out.println(nodeListofThePage.getLength());
         try {
@@ -227,60 +282,7 @@ public final class Util2 {
     }
 
 
-    //parsing page with Parse object
-    public void parsePage(Page page) {
-        try {
 
-            String currentDate = getCurrentDate();
-
-            for (Category c : page.getCategoriesList()) {
-
-                String pageUrl = page.getPageUrl()+ "/b" + c.getCategoryLink();
-
-
-                String webSiteDoc = Util2.getURLSource(pageUrl);
-
-                if (webSiteDoc.indexOf("pagnRA") != -1) {
-
-                    Element pageElement = (Element) xpath.evaluate("//span[@class='pagnRA']//a", Util2.wrapToDocument(webSiteDoc), XPathConstants.NODE);
-
-                    dumpToFile(webSiteDoc, "file1.html");
-
-                    int pageEnd = Integer.parseInt((String) xpath.evaluate("//span[@class='pagnDisabled']", Util2.wrapToDocument(webSiteDoc), XPathConstants.STRING));
-
-                    String pageLink = pageElement.getAttribute("href");
-
-                    pageLink = pageLink.substring(0, pageLink.length() - 1);
-
-                    for (int i = 1; i <= pageEnd; i++) {
-
-                        String newPageLink = page.getPageUrl() + pageLink + i;
-
-                        String webSiteDocPage = Util2.getURLSource(newPageLink);
-
-                        String exp = "//span[contains(@data-component-type, 's-search-results')]//div//div[contains(@class, 's-result-item')]";
-
-                        NodeList nodeListofNonFirstPage = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
-                                XPathConstants.NODESET);
-
-                        NodeList nodeListofThePage = (NodeList) xpath.evaluate("//li[contains(@id, 'result')]", Util2.wrapToDocument(webSiteDocPage),
-                                XPathConstants.NODESET);
-
-                        if (i == 1) {
-                          parseFirstPage(nodeListofThePage , c , currentDate);
-                        } else {
-                            parseNonFirstPage(nodeListofNonFirstPage , c , currentDate);
-                        }
-                    }
-                }
-
-            }
-
-
-        } catch (Exception e) {
-            System.err.println("parsePage" + e.getMessage());
-        }
-    }
 
 
     private static String parsePrice(String price) {
