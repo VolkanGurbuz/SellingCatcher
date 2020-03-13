@@ -33,6 +33,8 @@ public final class Util2 {
     private static HttpClient client = HttpClient.newHttpClient();
     private XPathFactory xpf = XPathFactory.newInstance();
     private XPath xpath = xpf.newXPath();
+    private ArrayList<Product> productList = new ArrayList<>();
+    private ArrayList<Category> categoryList = new ArrayList<>();
 
     public static String sendGetRequest(String url) {
         try {
@@ -104,10 +106,9 @@ public final class Util2 {
 
             String currentDate = getCurrentDate();
 
-            for (Category c : page.getCategoriesList()) {
+            for (Category cat : page.getCategoriesList()) {
 
-                String pageUrl = page.getPageUrl()+ "/b" + c.getCategoryLink();
-
+                String pageUrl = page.getPageUrl() + "/b" + cat.getCategoryLink();
 
                 String webSiteDoc = Util2.getURLSource(pageUrl);
 
@@ -124,7 +125,7 @@ public final class Util2 {
                     pageLink = pageLink.substring(0, pageLink.length() - 1);
 
                     for (int i = 1; i <= pageEnd; i++) {
-
+                 //   for (int i = 1; i <= 1; i++) {
                         String newPageLink = page.getPageUrl() + pageLink + i;
 
                         String webSiteDocPage = Util2.getURLSource(newPageLink);
@@ -138,9 +139,9 @@ public final class Util2 {
                                 XPathConstants.NODESET);
 
                         if (i == 1) {
-                            parseFirstPage(nodeListofThePage , c , currentDate);
+                            parseFirstPage(nodeListofThePage, cat, currentDate);
                         } else {
-                            parseNonFirstPage(nodeListofNonFirstPage , c , currentDate);
+                            parseNonFirstPage(nodeListofNonFirstPage, cat, currentDate);
                         }
                     }
                 }
@@ -153,25 +154,22 @@ public final class Util2 {
         }
     }
 
-    private void parseFirstPage(NodeList nodeListofThePage , Category c, String date) {
-        System.out.println(nodeListofThePage.getLength());
+    private void parseFirstPage(NodeList nodeListofThePage, Category c, String date) {
         try {
             for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
+           // for (int i = 0; i < 2; i++) {
+
                 Node node = nodeListofThePage.item(i);
                 if (node instanceof Element) {
                     Element element = (Element) node;
                     String productName = (String) xpath.evaluate(".//div[3]//div[1]//a//h2", element,
                             XPathConstants.STRING);
-
                     String productPrice = (String) xpath.evaluate(".//div[5]//div[1]//a//span[2]", element,
                             XPathConstants.STRING);
-
                     String productImg = (String) xpath.evaluate(".//div[2]//div[1]//div[1]//a//img//@src", element,
                             XPathConstants.STRING);
-
                     Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c, date);
-
-                    System.out.println(tempProduct.toString());
+                    productList.add(tempProduct);
                 }
             }
         } catch (Exception e) {
@@ -181,8 +179,11 @@ public final class Util2 {
 
     private void parseNonFirstPage(NodeList nodeListofThePage, Category c, String date) {
         try {
-            for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
-                Node node = nodeListofThePage.item(i);
+           for (int i = 0; i < nodeListofThePage.getLength() - 1; i++) {
+
+             //   for (int i = 0; i < 2; i++) {
+
+                    Node node = nodeListofThePage.item(i);
                 if (node instanceof Element) {
                     Element element = (Element) node;
                     String productName = (String) xpath.evaluate(".//div//span//div//div//div[2]//h2//a//span", element,
@@ -207,7 +208,8 @@ public final class Util2 {
                             XPathConstants.STRING);
 
                     Product tempProduct = new Product(productName, Double.parseDouble(parsePrice(productPrice)), productImg, c, date);
-                    System.out.println(tempProduct.toString());
+
+                    productList.add(tempProduct);
                 }
             }
         } catch (Exception e) {
@@ -225,8 +227,6 @@ public final class Util2 {
 
             NodeList nodeListCategories = (NodeList) xpath.evaluate(exp, Util2.wrapToDocument(webSiteDocPage),
                     XPathConstants.NODESET);
-
-            ArrayList<Category> categories = new ArrayList<>();
 
             for (int i = 0; i < nodeListCategories.getLength(); i++) {
                 Node node = nodeListCategories.item(i);
@@ -249,7 +249,8 @@ public final class Util2 {
                             String subCategoryLink = (String) xpath.evaluate(".//a/@href", elementSub,
                                     XPathConstants.STRING);
 
-                            categories.add(new Category("ID", clearTurkishChars(categoryName), clearTurkishChars(subCategoryName), fixLCategoryLink(subCategoryLink)));
+                            categoryList.add(new Category("ID", clearTurkishChars(categoryName), clearTurkishChars(subCategoryName), fixLCategoryLink(subCategoryLink)));
+
 
                             //   System.out.println("subCategoryName: " + clearTurkishChars(subCategoryName) + " subCategoryLink: " + fixLCategoryLink(subCategoryLink));
                         }
@@ -259,8 +260,8 @@ public final class Util2 {
 
             }
 
-            if (!categories.isEmpty()) {
-                page.setCategoriesList(categories);
+            if (!categoryList.isEmpty()) {
+                page.setCategoriesList(categoryList);
             }
 
 
@@ -280,9 +281,6 @@ public final class Util2 {
         }
         return null;
     }
-
-
-
 
 
     private static String parsePrice(String price) {
@@ -349,18 +347,31 @@ public final class Util2 {
     }
 
 
-    private String getCurrentDate(){
+    private String getCurrentDate() {
         try {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date date = new Date();
             return dateFormat.format(date);
 
-        }catch (Exception e){
-            System.err.println("errror getCurrentDate " + e ) ;
+        } catch (Exception e) {
+            System.err.println("errror getCurrentDate " + e);
         }
         return null;
     }
 
+    public ArrayList<Product> getProductList() {
+        return productList;
+    }
 
+    public void setProductList(ArrayList<Product> productList) {
+        this.productList = productList;
+    }
 
+    public ArrayList<Category> getCategoryList() {
+        return categoryList;
+    }
+
+    public void setCategoryList(ArrayList<Category> categoryList) {
+        this.categoryList = categoryList;
+    }
 }

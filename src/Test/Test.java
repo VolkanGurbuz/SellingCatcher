@@ -1,11 +1,14 @@
 package Test;
 
+import Model.Category;
 import Model.Page;
+import Util.DatabaseOperations;
 import Util.MysqlConnect;
 import Util.Util2;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 
 
 public class Test {
@@ -14,9 +17,18 @@ public class Test {
 
         Page pageAmazon = new Page("amazon" , "https://www.amazon.com.tr", "https://www.amazon.com.tr/gp/site-directory?ref_=nav_em_T1_0_2_2_12__fullstore");
         Util2 testUtil = new Util2();
+        MysqlConnect mysqlConnect = new MysqlConnect();
+        DatabaseOperations dboperations = new DatabaseOperations(mysqlConnect);
 
-       // testUtil.getAllCategories(pageAmazon);
-       // testUtil.parsePage(pageAmazon);
+        testUtil.getAllCategories(pageAmazon);
+
+      //  dboperations.addCategoryToServer(categories);
+
+        dboperations.getAllCategories();
+
+        testUtil.parsePage(pageAmazon);
+
+    dboperations.addProductsToServer(testUtil.getProductList());
 
 
         //String webSiteDoc = Util2.getURLSource("https://www.zirvemotomotiv.com.tr");
@@ -25,24 +37,6 @@ public class Test {
 
        // pageAmazon.showAllCategories();
 
-        MysqlConnect mysqlConnect = new MysqlConnect();
-
-
-        String sql = "SELECT * FROM `product` ";
-        try {
-            Statement stmt = mysqlConnect.connect().createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
-            while (rs.next()) {
-                String s = rs.getString("product_name");
-                System.out.println(s);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            mysqlConnect.disconnect();
-        }
 
 
 

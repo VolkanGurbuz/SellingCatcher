@@ -16,7 +16,7 @@ public class MysqlConnect {
     private static final String DATABASE_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/amazon";
     private static final String USERNAME = "volkangurbuz"; // username
-    private static final String PASSWORD = ""; //set password
+    private static final String PASSWORD = "birsen16"; //set password
     private static final String MAX_POOL = "250"; // set your own limit
 
     // create properties
