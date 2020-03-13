@@ -13,6 +13,12 @@ public class Category {
 
     }
 
+    public Category(String categoryId, String categoryName, String catSubName) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.subCategoryName = catSubName;
+    }
+
     public Category(String categoryId, String categoryName, String subCategoryName, String categoryLink) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
