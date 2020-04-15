@@ -15,7 +15,7 @@ public class Test {
 
     public static void main(String[] args) throws IOException, SQLException {
         String url = "";
-        Page pageAmazon = new Page("amazon" , url, "url/fullstore");
+        Page samplePage = new Page("pageName" , url, "url/fullstore");
         Util2 testUtil = new Util2();
         MysqlConnect mysqlConnect = new MysqlConnect();
         DatabaseOperations dboperations = new DatabaseOperations(mysqlConnect);
